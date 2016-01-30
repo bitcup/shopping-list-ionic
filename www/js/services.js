@@ -1,70 +1,116 @@
-angular.module('starter.services', [])
+angular.module('shopping-list.services', [])
 
-  .factory('Lists', function () {
-    var lists = [{
-      id: 0,
-      name: 'Costco',
-      items: [{
-        id: 0,
-        name: "olive oil"
-      }, {
-        id: 1,
-        name: "milk"
-      }]
-    }, {
-      id: 1,
-      name: 'Stop and Shop',
-      items: [{
-        id: 2,
-        name: "hummus"
-      }, {
-        id: 3,
-        name: "pasta"
-      }, {
-        id: 4,
-        name: "bread"
-      }]
-    }, {
-      id: 2,
-      name: 'Market Basket',
-      items: [{
-        id: 5,
-        name: "cheese"
-      }, {
-        id: 6,
-        name: "milk"
-      }, {
-        id: 7,
-        name: "chocolate"
-      }, {
-        id: 8,
-        name: "pancake mix"
-      }]
-    }];
+    .factory('Lists', function () {
+        var lists = [{
+            id: guid(),
+            name: 'Costco',
+            items: [{
+                id: guid(),
+                name: "olive oil",
+                purchased: false
+            }, {
+                id: guid(),
+                name: "milk",
+                purchased: true
+            }]
+        }, {
+            id: guid(),
+            name: 'Stop and Shop',
+            items: [{
+                id: guid(),
+                name: "hummus",
+                purchased: false
+            }, {
+                id: guid(),
+                name: "pasta",
+                purchased: true
+            }, {
+                id: guid(),
+                name: "bread",
+                purchased: false
+            }]
+        }, {
+            id: guid(),
+            name: 'Market Basket',
+            items: [{
+                id: guid(),
+                name: "cheese",
+                purchased: false
+            }, {
+                id: guid(),
+                name: "milk",
+                purchased: false
+            }, {
+                id: guid(),
+                name: "chocolate",
+                purchased: true
+            }, {
+                id: guid(),
+                name: "pancake mix",
+                purchased: false
+            }]
+        }];
 
-    return {
-      all: function () {
-        return lists;
-      },
-      remove: function (list) {
-        lists.splice(lists.indexOf(list), 1);
-      },
-      removeItem: function (itemId) {
-        for (var i = 0; i < lists.length; i++) {
-          for (var j=0; j<lists[i].items.length; j++) {
-            if (lists[i].items[j].id === parseInt(itemId)) {
-              lists[i].items[j].splice(lists[i].items[j].indexOf(itemId), 1);
+        return {
+            getAllLists: function () {
+                return lists;
+            },
+            getList: function (listId) {
+                for (var i = 0; i < lists.length; i++) {
+                    if (lists[i].id === listId) {
+                        return lists[i];
+                    }
+                }
+                return null;
+            },
+            addList: function (listName) {
+                this.getAllLists().push({
+                    id: guid(),
+                    name: listName,
+                    items: []
+                });
+            },
+            deleteList: function (list) {
+                var pos = lists.indexOf(list);
+                lists.splice(pos, 1);
+            },
+            removeItemFromList: function (itemId) {
+                for (var i = 0; i < lists.length; i++) {
+                    for (var j = 0; j < lists[i].items.length; j++) {
+                        if (lists[i].items[j].id === itemId) {
+                            var pos = lists[i].items.indexOf(lists[i].items[j]);
+                            lists[i].items.splice(pos, 1);
+                        }
+                    }
+                }
+            },
+            togglePurchased: function (itemId) {
+                var item = this.findItem(itemId);
+                if (item) {
+                    item.purchased = !item.purchased;
+                }
+            },
+            findItem: function (itemId) {
+                for (var i = 0; i < lists.length; i++) {
+                    for (var j = 0; j < lists[i].items.length; j++) {
+                        if (lists[i].items[j].id === itemId) {
+                            return lists[i].items[j];
+                        }
+                    }
+                }
+                return null;
             }
-          }
-        }
-      },
-      get: function (listId) {
-        for (var i = 0; i < lists.length; i++) {
-          if (lists[i].id === parseInt(listId)) {
-            return lists[i];
-          }
-        }
-        return null;
-      }
-    };
-  });
+        };
+    })
+;
+
+function guid() {
+    function s4() {
+        return Math.floor((1 + Math.random()) * 0x10000)
+            .toString(16)
+            .substring(1);
+    }
+
+    return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
+        s4() + '-' + s4() + s4() + s4();
+}
