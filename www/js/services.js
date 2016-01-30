@@ -78,9 +78,19 @@ angular.module('shopping-list.services', [])
                     items: []
                 });
             },
+            addItemToList: function (list, itemName) {
+                list.items.push({
+                    id: guid(),
+                    name: itemName,
+                    purchased: false
+                });
+            },
             deleteList: function (list) {
                 var pos = lists.indexOf(list);
                 lists.splice(pos, 1);
+            },
+            clearItemsInList: function (list) {
+                list.items = [];
             },
             removeItemFromList: function (itemId) {
                 for (var i = 0; i < lists.length; i++) {

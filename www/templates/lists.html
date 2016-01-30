@@ -8,27 +8,20 @@
 
     <ion-content>
 
-        <ion-list id="lists-list">
+        <ion-list>
             <ion-item class="item-remove-animate item-icon-right" ng-repeat="list in lists" type="item-text-wrap"
                       href="#/tab/lists/{{list.id}}">{{list.name}}
+                <span class="badge badge-positive">{{list.items.length}}</span>
                 <i class="icon ion-chevron-right icon-accessory"></i>
                 <ion-option-button class="button-assertive" ng-click="deleteList(list)">Delete</ion-option-button>
+                <ion-option-button class="button-calm" ng-click="clearItemsInList(list)">Clear</ion-option-button>
             </ion-item>
-
-            <!--<ion-item class="item-icon-left">-->
-            <!--<i class="icon ion-ios-plus-empty xx-large" ng-click="showNewListInput()"></i>-->
-            <!--<input type="text" placeholder="New List Name" ng-show="newListInput">-->
-            <!--</ion-item>-->
-
         </ion-list>
 
         <div class="padding-top"></div>
         <i class="icon ion-ios-plus-empty xx-large pad-it" ng-click="showNewListInputField()" style="float: left;"></i>
         <input id="newListName" type="text" placeholder="New List Name" ng-model="newListName" ng-show="showNewListInputFlag"
                key-bind="addList(newListName); newListName=''" style="padding-left: 10px !important; font-size: 16px;">
-
-
-        <!--<button class="button" ng-click="foo()"></button>-->
 
     </ion-content>
 </ion-view>
