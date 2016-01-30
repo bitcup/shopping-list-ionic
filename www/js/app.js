@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 // 'shopping-list.services' is found in services.js
 // 'shopping-list.controllers' is found in controllers.js
-angular.module('shopping-list', ['ionic', 'shopping-list.controllers', 'shopping-list.services'])
+angular.module('shopping-list', ['ionic', 'shopping-list.controllers', 'shopping-list.services', 'shopping-list.directives'])
 
     .run(function ($ionicPlatform) {
         $ionicPlatform.ready(function () {

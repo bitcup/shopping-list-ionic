@@ -1,6 +1,6 @@
 angular.module('shopping-list.controllers', [])
 
-    .controller('ListsCtrl', function ($scope, Lists) {
+    .controller('ListsCtrl', function ($scope, $location, Lists, focus) {
         // With the new view caching in Ionic, Controllers are only called
         // when they are recreated or on app start, instead of every page change.
         // To listen for when this page is active (for example, to refresh data),
@@ -9,17 +9,24 @@ angular.module('shopping-list.controllers', [])
         //$scope.$on('$ionicView.enter', function(e) {
         //});
         $scope.lists = Lists.getAllLists();
-        $scope.newListInput = false;
+        $scope.showNewListInputFlag = false;
 
         $scope.deleteList = function (list) {
             Lists.deleteList(list);
         };
-        $scope.addList = function (listName) {
-            Lists.addList(listName);
+        $scope.addList = function (name) {
+            Lists.addList(name);
+            $scope.showNewListInputFlag = false;
         };
-        $scope.showNewListInput = function () {
-            $scope.newListInput = true;
+        $scope.showNewListInputField = function () {
+            $scope.showNewListInputFlag = true;
+            focus("newListName");
         };
+
+        //$scope.foo = function () {
+        //    var list = Lists.getListByName("costco");
+        //    $location.path('/tab/lists/' + list.id);
+        //}
     })
 
     .controller('ItemsCtrl', function ($scope, $stateParams, Lists) {
@@ -39,7 +46,7 @@ angular.module('shopping-list.controllers', [])
         };
     })
 
-    .controller('TabCtrl', function ($scope, $ionicTabsDelegate) {
+    .controller('TabCtrl', function ($scope, $location, $ionicTabsDelegate, Lists) {
         $scope.sendVoice = function () {
             try {
 
@@ -74,7 +81,25 @@ angular.module('shopping-list.controllers', [])
                     {}, // empty for simple requests, some optional parameters can be here
                     function (response) {
                         // place your result processing here
-                        alert(JSON.stringify(response));
+                        //alert(JSON.stringify(response));
+
+                        if (response.status.code === 200) {
+                            var voiceAction = response.result.action;
+                            var voiceParams = response.result.parameters;
+                            //alert("voiceAction:" + voiceAction + ", voiceParams: " + JSON.stringify(voiceParams));
+                            if (voiceAction == "useList") {
+                                //alert("switching to list: " + voiceParams.list);
+                                var list = Lists.getListByName(voiceParams.list);
+                                //alert("found list: " + JSON.stringify(list));
+                                if (list != null) {
+                                    $location.path('/tab/lists');
+                                    $scope.$apply();
+                                    $location.path('/tab/lists/' + list.id);
+                                    $scope.$apply();
+                                }
+                            }
+                        }
+
                     },
                     function (error) {
                         // place your error processing here
