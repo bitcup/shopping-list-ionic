@@ -20,8 +20,12 @@
 
         <div class="padding-top"></div>
         <i class="icon ion-ios-plus-empty xx-large pad-it" ng-click="showNewListInputField()" style="float: left;"></i>
-        <input id="newListName" type="text" placeholder="New List Name" ng-model="newListName" ng-show="showNewListInputFlag"
-               key-bind="addList(newListName); newListName=''" style="padding-left: 10px !important; font-size: 16px;">
+        <input id="newListName" type="text" placeholder="New List Name"
+               ng-model="newListName"
+               ng-show="showNewListInputFlag"
+               ng-focus="showNewListInputFlag"
+               key-bind="addList(newListName); newListName=''"
+               style="padding-left: 10px !important; font-size: 16px;">
 
     </ion-content>
 </ion-view>

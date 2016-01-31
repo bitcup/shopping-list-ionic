@@ -13,17 +13,24 @@ angular.module('shopping-list.directives', [])
         };
     })
 
-    .directive('eventFocus', function(focus) {
-        return function(scope, elem, attr) {
-            elem.on(attr.eventFocus, function() {
-                focus(attr.eventFocusId);
-            });
+    .directive('ngFocus', function($timeout) {
+        return {
+            link: function (scope, element, attrs) {
+                scope.$watch(attrs.ngFocus, function (val) {
+                    if (angular.isDefined(val) && val) {
+                        $timeout(function () {
+                            element[0].focus();
+                        });
+                    }
+                }, true);
 
-            // Removes bound events in the element itself
-            // when the scope is destroyed
-            scope.$on('$destroy', function() {
-                elem.off(attr.eventFocus);
-            });
+                element.bind('blur', function () {
+                    if (angular.isDefined(attrs.ngFocusLost)) {
+                        scope.$apply(attrs.ngFocusLost);
+
+                    }
+                });
+            }
         };
     })
 ;

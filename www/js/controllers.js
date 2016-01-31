@@ -1,6 +1,6 @@
 angular.module('shopping-list.controllers', [])
 
-    .controller('ListsCtrl', function ($scope, $ionicListDelegate, Lists, focus) {
+    .controller('ListsCtrl', function ($scope, $ionicListDelegate, Lists) {
         // With the new view caching in Ionic, Controllers are only called
         // when they are recreated or on app start, instead of every page change.
         // To listen for when this page is active (for example, to refresh data),
@@ -24,11 +24,10 @@ angular.module('shopping-list.controllers', [])
         };
         $scope.showNewListInputField = function () {
             $scope.showNewListInputFlag = true;
-            focus("newListName");
         };
     })
 
-    .controller('ItemsCtrl', function ($scope, $stateParams, Lists, focus) {
+    .controller('ItemsCtrl', function ($scope, $stateParams, Lists) {
         $scope.list = Lists.getList($stateParams.listId);
         $scope.showNewItemInputFlag = false;
 
@@ -41,7 +40,6 @@ angular.module('shopping-list.controllers', [])
         };
         $scope.showNewItemInputField = function () {
             $scope.showNewItemInputFlag = true;
-            focus("newItemName");
         };
         $scope.togglePurchased = function (itemId) {
             Lists.togglePurchased(itemId);
