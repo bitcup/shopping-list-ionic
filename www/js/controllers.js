@@ -26,11 +26,6 @@ angular.module('shopping-list.controllers', [])
             $scope.showNewListInputFlag = true;
             focus("newListName");
         };
-
-        //$scope.foo = function () {
-        //    var list = Lists.getListByName("costco");
-        //    $location.path('/tab/lists/' + list.id);
-        //}
     })
 
     .controller('ItemsCtrl', function ($scope, $stateParams, Lists, focus) {
@@ -38,7 +33,7 @@ angular.module('shopping-list.controllers', [])
         $scope.showNewItemInputFlag = false;
 
         $scope.deleteItem = function (itemId) {
-            Lists.removeItemFromList(itemId);
+            Lists.removeItemById(itemId);
         };
         $scope.addItem = function (list, name) {
             Lists.addItemToList(list, name);
@@ -100,15 +95,48 @@ angular.module('shopping-list.controllers', [])
                             var voiceAction = response.result.action;
                             var voiceParams = response.result.parameters;
                             //alert("voiceAction:" + voiceAction + ", voiceParams: " + JSON.stringify(voiceParams));
-                            if (voiceAction == "useList") {
+                            var list, path, listId, itemName;
+                            if (voiceAction === "useList") {
                                 //alert("switching to list: " + voiceParams.list);
-                                var list = Lists.getListByName(voiceParams.list);
+                                list = Lists.getListByName(voiceParams.list);
                                 //alert("found list: " + JSON.stringify(list));
                                 if (list != null) {
                                     $location.path('/tab/lists');
                                     $scope.$apply();
                                     $location.path('/tab/lists/' + list.id);
                                     $scope.$apply();
+                                }
+                            }
+                            else if (voiceAction === "addItemToList") {
+                                path = $location.path();
+                                //alert("path=" + path);
+                                if (path.indexOf('/tab/lists/') == -1) {
+                                    alert('Please select a list first.');
+                                } else {
+                                    listId = path.substr(path.lastIndexOf('/') + 1);
+                                    list = Lists.getList(listId);
+                                    itemName = voiceParams.item;
+                                    //alert("found list: " + JSON.stringify(list) + ", adding item: " + itemName);
+                                    if (list != null) {
+                                        Lists.addItemToList(list, itemName);
+                                        $scope.$apply();
+                                    }
+                                }
+                            }
+                            else if (voiceAction === "removeItemFromList") {
+                                path = $location.path();
+                                //alert("path=" + path);
+                                if (path.indexOf('/tab/lists/') == -1) {
+                                    alert('Please select a list first.');
+                                } else {
+                                    listId = path.substr(path.lastIndexOf('/') + 1);
+                                    list = Lists.getList(listId);
+                                    itemName = voiceParams.item;
+                                    //alert("found list: " + JSON.stringify(list) + ", removing item: " + itemName);
+                                    if (list != null) {
+                                        Lists.removeItemByNameFromList(list, itemName);
+                                        $scope.$apply();
+                                    }
                                 }
                             }
                         }
