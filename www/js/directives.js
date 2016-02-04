@@ -13,23 +13,15 @@ angular.module('shopping-list.directives', [])
         };
     })
 
-    .directive('ngFocus', function($timeout) {
+    .directive('focusMe', function ($timeout) {
         return {
             link: function (scope, element, attrs) {
-                scope.$watch(attrs.ngFocus, function (val) {
-                    if (angular.isDefined(val) && val) {
-                        $timeout(function () {
-                            element[0].focus();
-                        });
+                $timeout(function () {
+                    element[0].focus();
+                    if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
+                        cordova.plugins.Keyboard.show(); //open keyboard manually
                     }
-                }, true);
-
-                element.bind('blur', function () {
-                    if (angular.isDefined(attrs.ngFocusLost)) {
-                        scope.$apply(attrs.ngFocusLost);
-
-                    }
-                });
+                }, 350);
             }
         };
     })

@@ -7,22 +7,23 @@
 <ion-view view-title="{{list.name}}">
     <ion-content>
 
+        <div class="row">
+            <div class="col">
+                <input id="newItemName"
+                       type="text"
+                       placeholder="Add Item"
+                       ng-model="newItemName"
+                       key-bind="addItem(list, newItemName); newItemName=''"
+                       class="add-item">
+            </div>
+        </div>
+
         <ion-list>
             <ion-item class="item-remove-animate" ng-repeat="item in list.items" type="item-text-wrap">
-                <!--<ion-checkbox ng-model="item.purchased" ng-class="{'strike-it': item.purchased}">{{item.name}}</ion-checkbox>-->
                 <span ng-click="togglePurchased(item.id)" ng-class="{'strike-it': item.purchased}">{{item.name}}</span>
                 <ion-option-button class="button-assertive" ng-click="deleteItem(item.id)">Delete</ion-option-button>
             </ion-item>
         </ion-list>
-
-        <div class="padding-top"></div>
-        <i class="icon ion-ios-plus-empty xx-large pad-it" ng-click="showNewItemInputField()" style="float: left;"></i>
-        <input id="newItemName" type="text" placeholder="New Item Name"
-               ng-model="newItemName"
-               ng-show="showNewItemInputFlag"
-               ng-focus="showNewItemInputFlag"
-               key-bind="addItem(list, newItemName); newItemName=''"
-               style="padding-left: 10px !important; font-size: 16px;">
 
     </ion-content>
 </ion-view>

@@ -1,6 +1,6 @@
 angular.module('shopping-list.controllers', [])
 
-    .controller('ListsCtrl', function ($scope, $ionicListDelegate, Lists) {
+    .controller('ListsCtrl', function ($scope, $ionicListDelegate, $ionicPlatform, $window, $timeout, Lists) {
         // With the new view caching in Ionic, Controllers are only called
         // when they are recreated or on app start, instead of every page change.
         // To listen for when this page is active (for example, to refresh data),
@@ -9,7 +9,6 @@ angular.module('shopping-list.controllers', [])
         //$scope.$on('$ionicView.enter', function(e) {
         //});
         $scope.lists = Lists.getAllLists();
-        $scope.showNewListInputFlag = false;
 
         $scope.deleteList = function (list) {
             Lists.deleteList(list);
@@ -20,26 +19,23 @@ angular.module('shopping-list.controllers', [])
         };
         $scope.addList = function (name) {
             Lists.addList(name);
-            $scope.showNewListInputFlag = false;
-        };
-        $scope.showNewListInputField = function () {
-            $scope.showNewListInputFlag = true;
+            $timeout(function () {
+                if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
+                    cordova.plugins.Keyboard.hide();
+                }
+                $scope.newListName='';
+            }, 0);
         };
     })
 
     .controller('ItemsCtrl', function ($scope, $stateParams, Lists) {
         $scope.list = Lists.getList($stateParams.listId);
-        $scope.showNewItemInputFlag = false;
 
         $scope.deleteItem = function (itemId) {
             Lists.removeItemById(itemId);
         };
         $scope.addItem = function (list, name) {
             Lists.addItemToList(list, name);
-            $scope.showNewItemInputFlag = false;
-        };
-        $scope.showNewItemInputField = function () {
-            $scope.showNewItemInputFlag = true;
         };
         $scope.togglePurchased = function (itemId) {
             Lists.togglePurchased(itemId);

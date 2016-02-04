@@ -72,14 +72,14 @@ angular.module('shopping-list.services', [])
                 return null;
             },
             addList: function (listName) {
-                this.getAllLists().push({
+                this.getAllLists().unshift({
                     id: guid(),
                     name: listName,
                     items: []
                 });
             },
             addItemToList: function (list, itemName) {
-                list.items.push({
+                list.items.unshift({
                     id: guid(),
                     name: itemName,
                     purchased: false

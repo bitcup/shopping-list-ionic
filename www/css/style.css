@@ -15,17 +15,19 @@
     font-size: 75px !important;
 }
 
-/*.item-complex .item-content,*/
-/*.item-radio .item-content {*/
-    /*padding: 0;*/
-/*}*/
-
 .strike-it {
     text-decoration: line-through;
 }
 
-.pad-it {
-    padding-left: 15px;
+.add-item-row {
+    background-color: #fafafa !important;
+}
+.add-item {
+    background-color: #fafafa !important;
+    border-color: #ddd !important;
+    font-size: 16px !important;
+    padding-left: 7px !important;
+    width: 100%;
 }
 
 /*metering*/
