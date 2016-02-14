@@ -12,10 +12,8 @@ angular.module('shopping-list', ['ionic', 'shopping-list.controllers', 'shopping
             // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
             // for form inputs)
             if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
-                //cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-                cordova.plugins.Keyboard.hideKeyboardAccessoryBar(false);
-                cordova.plugins.Keyboard.disableScroll(true);
-
+                cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
+                cordova.plugins.Keyboard.disableScroll(false);
             }
             if (window.StatusBar) {
                 // org.apache.cordova.statusbar required
@@ -86,4 +84,8 @@ angular.module('shopping-list', ['ionic', 'shopping-list.controllers', 'shopping
         // if none of the above states are matched, use this as the fallback
         $urlRouterProvider.otherwise('/tab/lists');
 
-    });
+    })
+
+    .constant('API_HOST', 'http://omars-macbook-pro.local:8080')
+    .constant('LOCAL_STORAGE_USER_ID_KEY', 'shopping.list.user.id')
+;

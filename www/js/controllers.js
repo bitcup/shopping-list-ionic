@@ -1,6 +1,6 @@
 angular.module('shopping-list.controllers', [])
 
-    .controller('ListsCtrl', function ($scope, $ionicListDelegate, $ionicPlatform, $window, $timeout, Lists) {
+    .controller('ListsCtrl', function ($scope, $ionicListDelegate, $timeout, Lists) {
         // With the new view caching in Ionic, Controllers are only called
         // when they are recreated or on app start, instead of every page change.
         // To listen for when this page is active (for example, to refresh data),
@@ -17,28 +17,34 @@ angular.module('shopping-list.controllers', [])
             Lists.clearItemsInList(list);
             $ionicListDelegate.closeOptionButtons();
         };
-        $scope.addList = function (name) {
-            Lists.addList(name);
+        $scope.createList = function (name) {
+            var list = {"name": name};
+            Lists.createList(list).then(function () {
+                $scope.lists = Lists.getAllLists()
+            });
             $timeout(function () {
                 if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
                     cordova.plugins.Keyboard.hide();
                 }
-                $scope.newListName='';
+                $scope.newListName = '';
             }, 0);
+        };
+        $scope.updateList = function (list) {
+            Lists.updateList(list);
         };
     })
 
-    .controller('ItemsCtrl', function ($scope, $stateParams, Lists) {
+    .controller('ItemsCtrl', function ($scope, $stateParams, Lists, Items) {
         $scope.list = Lists.getList($stateParams.listId);
 
         $scope.deleteItem = function (itemId) {
-            Lists.removeItemById(itemId);
+            Items.deleteItem(itemId);
         };
-        $scope.addItem = function (list, name) {
-            Lists.addItemToList(list, name);
+        $scope.addItem = function (listId, item) {
+            Lists.addItemForList(listId, item);
         };
-        $scope.togglePurchased = function (itemId) {
-            Lists.togglePurchased(itemId);
+        $scope.updateItem = function (item) {
+            Items.updateItem(item);
         };
     })
 
