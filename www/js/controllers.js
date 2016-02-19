@@ -1,33 +1,40 @@
 angular.module('shopping-list.controllers', [])
 
-    .controller('ListsCtrl', function ($scope, $ionicListDelegate, $timeout, Lists) {
+    .controller('ListsCtrl', function ($scope, $ionicListDelegate, $timeout, $log, Lists) {
         // With the new view caching in Ionic, Controllers are only called
         // when they are recreated or on app start, instead of every page change.
         // To listen for when this page is active (for example, to refresh data),
         // listen for the $ionicView.enter event:
         //
-        //$scope.$on('$ionicView.enter', function(e) {
-        //});
-        $scope.lists = Lists.getAllLists();
+        $scope.$on('$ionicView.enter', function (e) {
+            $scope.lists = Lists.getAllLists();
+        });
+        //$scope.lists = Lists.getAllLists();
 
         $scope.deleteList = function (list) {
-            Lists.deleteList(list);
+            Lists.deleteList(list).$promise.then(function () {
+                $scope.lists = Lists.getAllLists();
+            });
         };
         $scope.clearItemsInList = function (list) {
             Lists.clearItemsInList(list);
             $ionicListDelegate.closeOptionButtons();
         };
-        $scope.createList = function (name) {
-            var list = {"name": name};
-            Lists.createList(list).then(function () {
-                $scope.lists = Lists.getAllLists()
-            });
-            $timeout(function () {
-                if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
-                    cordova.plugins.Keyboard.hide();
-                }
-                $scope.newListName = '';
-            }, 0);
+        $scope.createList = function (listName) {
+            var list = {"name": listName};
+            $scope.lists = Lists.createList(list);
+                //.then(function () {
+                //    $log.info("list " + listName + " created successfully. num lists=" + $scope.lists.length + " -- getting all lists...");
+                //    $scope.lists = Lists.getAllLists().$promise.then(function() {
+                //        $log.info("got all lists - num lists=" );
+                //    });
+                //    $timeout(function () {
+                //        if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
+                //            cordova.plugins.Keyboard.hide();
+                //        }
+                //        $scope.newListName = '';
+                //    }, 0);
+                //});
         };
         $scope.updateList = function (list) {
             Lists.updateList(list);
@@ -35,13 +42,22 @@ angular.module('shopping-list.controllers', [])
     })
 
     .controller('ItemsCtrl', function ($scope, $stateParams, Lists, Items) {
-        $scope.list = Lists.getList($stateParams.listId);
+
+        $scope.$on('$ionicView.enter', function (e) {
+            $scope.list = Lists.getList($stateParams.listId);
+        });
 
         $scope.deleteItem = function (itemId) {
             Items.deleteItem(itemId);
         };
-        $scope.addItem = function (listId, item) {
-            Lists.addItemForList(listId, item);
+        $scope.addItem = function (itemName) {
+            if ($scope.list.items == null) {
+                $scope.list.items = [];
+            }
+            $scope.list.items.unshift({"name": itemName, "purchased": false});
+            Lists.updateList($scope.list).$promise.then(function () {
+                $scope.list = Lists.getList($stateParams.listId);
+            });
         };
         $scope.updateItem = function (item) {
             Items.updateItem(item);
