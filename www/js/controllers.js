@@ -1,66 +1,99 @@
 angular.module('shopping-list.controllers', [])
 
-    .controller('ListsCtrl', function ($scope, $ionicListDelegate, $timeout, $log, Lists) {
+    .controller('ListsCtrl', function ($scope, $ionicListDelegate, $log, ListsModel) {
         // With the new view caching in Ionic, Controllers are only called
         // when they are recreated or on app start, instead of every page change.
         // To listen for when this page is active (for example, to refresh data),
         // listen for the $ionicView.enter event:
         //
+
         $scope.$on('$ionicView.enter', function (e) {
-            $scope.lists = Lists.getAllLists();
+            getAll();
         });
-        //$scope.lists = Lists.getAllLists();
+
+        function getAll() {
+            ListsModel.all().then(function (result) {
+                $scope.lists = result.data;
+                $scope.newList.name = '';
+            });
+        }
+
+        $scope.newList = {name: ''};
 
         $scope.deleteList = function (list) {
-            Lists.deleteList(list).$promise.then(function () {
-                $scope.lists = Lists.getAllLists();
+            ListsModel.delete(list.id).then(function (result) {
+                $ionicListDelegate.closeOptionButtons();
+                getAll();
             });
         };
+
         $scope.clearItemsInList = function (list) {
-            Lists.clearItemsInList(list);
-            $ionicListDelegate.closeOptionButtons();
+            list.items = [];
+            ListsModel.update(list.id, list).then(function (result) {
+                $ionicListDelegate.closeOptionButtons();
+                getAll();
+            });
         };
-        $scope.createList = function (listName) {
-            var list = {"name": listName};
-            $scope.lists = Lists.createList(list);
-                //.then(function () {
-                //    $log.info("list " + listName + " created successfully. num lists=" + $scope.lists.length + " -- getting all lists...");
-                //    $scope.lists = Lists.getAllLists().$promise.then(function() {
-                //        $log.info("got all lists - num lists=" );
-                //    });
-                //    $timeout(function () {
-                //        if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
-                //            cordova.plugins.Keyboard.hide();
-                //        }
-                //        $scope.newListName = '';
-                //    }, 0);
-                //});
+
+        $scope.addList = function () {
+            var list = {name: $scope.newList.name};
+            $scope.lists = ListsModel.create(list).then(function (result) {
+                getAll();
+            });
         };
+
         $scope.updateList = function (list) {
-            Lists.updateList(list);
+            ListsModel.update(list.id, list).then(function (result) {
+                getAll();
+            });
         };
     })
 
-    .controller('ItemsCtrl', function ($scope, $stateParams, Lists, Items) {
+    .controller('ItemsCtrl', function ($scope, $ionicListDelegate, $stateParams, ListsModel) {
 
-        $scope.$on('$ionicView.enter', function (e) {
-            $scope.list = Lists.getList($stateParams.listId);
-        });
+        getAll();
 
-        $scope.deleteItem = function (itemId) {
-            Items.deleteItem(itemId);
-        };
-        $scope.addItem = function (itemName) {
-            if ($scope.list.items == null) {
-                $scope.list.items = [];
+        function getAll() {
+            ListsModel.fetch($stateParams.listId).then(function (result) {
+                $scope.list = result.data;
+                $scope.newItem.name = '';
+            });
+        }
+
+        $scope.newItem = {name: '', purchased: false};
+
+        $scope.deleteItem = function (item) {
+            var list = angular.copy($scope.list);
+            for (var i = list.items.length - 1; i >= 0; i--) {
+                if (list.items[i].id === item.id) {
+                    list.items.splice(i, 1);
+                }
             }
-            $scope.list.items.unshift({"name": itemName, "purchased": false});
-            Lists.updateList($scope.list).$promise.then(function () {
-                $scope.list = Lists.getList($stateParams.listId);
+            ListsModel.update(list.id, list).then(function (result) {
+                $ionicListDelegate.closeOptionButtons();
+                getAll();
             });
         };
-        $scope.updateItem = function (item) {
-            Items.updateItem(item);
+
+        $scope.togglePurchased = function (item) {
+            var list = angular.copy($scope.list);
+            for (var i = list.items.length - 1; i >= 0; i--) {
+                if (list.items[i].id === item.id) {
+                    list.items[i].purchased = !list.items[i].purchased;
+                }
+            }
+            ListsModel.update(list.id, list).then(function (result) {
+                $ionicListDelegate.closeOptionButtons();
+                getAll();
+            });
+        };
+
+        $scope.addItem = function () {
+            var list = angular.copy($scope.list);
+            list.items.unshift($scope.newItem);
+            ListsModel.update(list.id, list).then(function (result) {
+                getAll();
+            });
         };
     })
 
@@ -70,7 +103,7 @@ angular.module('shopping-list.controllers', [])
         };
     })
 
-    .controller('TabCtrl', function ($scope, $location, $ionicTabsDelegate, Lists) {
+    .controller('TabCtrl', function ($scope, $location, $ionicTabsDelegate, ListsModel) {
         $scope.sendVoice = function () {
             try {
 
@@ -114,7 +147,7 @@ angular.module('shopping-list.controllers', [])
                             var list, path, listId, itemName;
                             if (voiceAction === "useList") {
                                 //alert("switching to list: " + voiceParams.list);
-                                list = Lists.getListByName(voiceParams.list);
+                                list = ListsModel.getListByName(voiceParams.list);
                                 //alert("found list: " + JSON.stringify(list));
                                 if (list != null) {
                                     $location.path('/tab/lists');
@@ -130,11 +163,11 @@ angular.module('shopping-list.controllers', [])
                                     alert('Please select a list first.');
                                 } else {
                                     listId = path.substr(path.lastIndexOf('/') + 1);
-                                    list = Lists.getList(listId);
+                                    list = ListsModel.getList(listId);
                                     itemName = voiceParams.item;
                                     //alert("found list: " + JSON.stringify(list) + ", adding item: " + itemName);
                                     if (list != null) {
-                                        Lists.addItemToList(list, itemName);
+                                        ListsModel.addItemToList(list, itemName);
                                         $scope.$apply();
                                     }
                                 }
@@ -146,11 +179,11 @@ angular.module('shopping-list.controllers', [])
                                     alert('Please select a list first.');
                                 } else {
                                     listId = path.substr(path.lastIndexOf('/') + 1);
-                                    list = Lists.getList(listId);
+                                    list = ListsModel.getList(listId);
                                     itemName = voiceParams.item;
                                     //alert("found list: " + JSON.stringify(list) + ", removing item: " + itemName);
                                     if (list != null) {
-                                        Lists.removeItemByNameFromList(list, itemName);
+                                        ListsModel.removeItemByNameFromList(list, itemName);
                                         $scope.$apply();
                                     }
                                 }

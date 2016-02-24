@@ -1,50 +1,38 @@
 angular.module('shopping-list.services', ['ngResource'])
 
-    .factory('Lists', ['$resource', '$log', '$state', 'API_HOST',
-        function ($resource, $log, $state, API_HOST) {
-            // defines the endpoint, optional params, and method names (in addition to the default ones)
-            var listsResource = $resource(API_HOST + '/api/v1.0/lists/:listId', {listId: '@id'});
-            //var itemsForListResource = $resource(API_HOST + '/api/v1.0/lists/:listId/items', {listId: '@id'});
+    .service('ListsModel', function ($http, $log, API_HOST) {
+        var service = this,
+            baseUrl = '/api/v1.0',
+            objectName = '/lists';
 
-            var factory = {};
+        function getUrl() {
+            return API_HOST + baseUrl + objectName;
+        }
 
-            factory.getAllLists = function () {
-                $log.info("calling getAllLists...");
-                return listsResource.query();
-            };
-            factory.createList = function (list) {
-                return (new listsResource(list)).$save();
-            };
-            factory.getList = function (listId) {
-                return listsResource.get({listId: listId});
-            };
-            factory.deleteList = function (list) {
-                return listsResource.delete({listId: list.id});
-            };
-            //factory.addItemForList = function (listId, item) {
-            //    return (new itemsForListResource(listId)).$save();
-            //};
-            factory.updateList = function (list) {
-                return $resource(API_HOST + '/api/v1.0/lists/:listId', {listId: list.id}, {'updateOne': {method: 'PUT'}}).updateOne(list);
-            };
-            return factory;
-        }])
+        function getUrlForId(id) {
+            return getUrl() + '/' + id;
+        }
 
-    .factory('Items', ['$resource', '$log', '$state', 'API_HOST',
-        function ($resource, $log, $state, API_HOST) {
-            // defines the endpoint, optional params, and method names (in addition to the default ones)
-            var itemsResource = $resource(API_HOST + '/api/v1.0/items/:itemId', {itemId: '@id'});
+        service.all = function () {
+            return $http.get(getUrl());
+        };
 
-            var factory = {};
+        service.fetch = function (id) {
+            return $http.get(getUrlForId(id));
+        };
 
-            factory.deleteItem = function (itemId) {
-                return itemsResource.delete({itemId: itemId});
-            };
-            factory.updateItem = function (item) {
-                return $resource(API_HOST + '/api/v1.0/items', {}, {'updateOne': {method: 'PUT'}}).updateOne(item);
-            };
-            return factory;
-        }])
+        service.create = function (object) {
+            return $http.post(getUrl(), object);
+        };
+
+        service.update = function (id, object) {
+            return $http.put(getUrlForId(id), object);
+        };
+
+        service.delete = function (id) {
+            return $http.delete(getUrlForId(id));
+        };
+    })
 
     // interceptor to add Authorization header for all requests - calculates HMAC via RequestSigner
     // note: also, for this to work, the server needs to accept Authorization header
