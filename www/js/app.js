@@ -8,13 +8,22 @@
 angular.module('shopping-list', ['ionic', 'shopping-list.controllers', 'shopping-list.services', 'shopping-list.directives'])
 
     .run(function ($ionicPlatform) {
-        $ionicPlatform.ready(function () {
-            // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-            // for form inputs)
+        $ionicPlatform.ready(function ($cordovaKeyboard) {
+
             if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
+                //alert('keyboard enabled');
                 cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
                 cordova.plugins.Keyboard.disableScroll(false);
+                //cordova.plugins.Keyboard.open();
             }
+
+            //if ($cordovaKeyboard) {
+            //    alert('foo');
+            //    $cordovaKeyboard.hideKeyboardAccessoryBar(true);
+            //    $cordovaKeyboard.disableScroll(false);
+            //    $cordovaKeyboard.open();
+            //}
+
             if (window.StatusBar) {
                 // org.apache.cordova.statusbar required
                 StatusBar.styleDefault();

@@ -18,7 +18,20 @@ angular.module('shopping-list.controllers', [])
             });
         }
 
+        $scope.isEdit = false;
+        $scope.lists = [];
         $scope.newList = {name: ''};
+
+        $scope.startEdit = function () {
+            $scope.isEdit = true;
+        };
+
+        $scope.stopEdit = function () {
+            if (!isEmptyOrSpaces($scope.newList.name)) {
+                $scope.addList();
+            }
+            $scope.isEdit = false;
+        };
 
         $scope.deleteList = function (list) {
             ListsModel.delete(list.id).then(function (result) {
@@ -36,10 +49,14 @@ angular.module('shopping-list.controllers', [])
         };
 
         $scope.addList = function () {
-            var list = {name: $scope.newList.name};
-            $scope.lists = ListsModel.create(list).then(function (result) {
+            if (!isEmptyOrSpaces($scope.newList.name)) {
+                var list = {name: $scope.newList.name};
+                $scope.lists = ListsModel.create(list).then(function (result) {
+                    getAll();
+                });
+            } else {
                 getAll();
-            });
+            }
         };
 
         $scope.updateList = function (list) {
@@ -60,7 +77,19 @@ angular.module('shopping-list.controllers', [])
             });
         }
 
+        $scope.isEdit = false;
         $scope.newItem = {name: '', purchased: false};
+
+        $scope.startEdit = function () {
+            $scope.isEdit = true;
+        };
+
+        $scope.stopEdit = function () {
+            if (!isEmptyOrSpaces($scope.newItem.name)) {
+                $scope.addItem();
+            }
+            $scope.isEdit = false;
+        };
 
         $scope.deleteItem = function (item) {
             var list = angular.copy($scope.list);
@@ -89,11 +118,16 @@ angular.module('shopping-list.controllers', [])
         };
 
         $scope.addItem = function () {
-            var list = angular.copy($scope.list);
-            list.items.unshift($scope.newItem);
-            ListsModel.update(list.id, list).then(function (result) {
+            if (!isEmptyOrSpaces($scope.newItem.name)) {
+                var list = angular.copy($scope.list);
+                //list.items.unshift($scope.newItem);
+                list.items.push($scope.newItem);
+                ListsModel.update(list.id, list).then(function (result) {
+                    getAll();
+                });
+            } else {
                 getAll();
-            });
+            }
         };
     })
 
@@ -211,3 +245,7 @@ angular.module('shopping-list.controllers', [])
             console.info("called doOnDeselect");
         }
     });
+
+function isEmptyOrSpaces(str) {
+    return str === null || str.match(/^ *$/) !== null;
+}

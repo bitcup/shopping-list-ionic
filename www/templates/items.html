@@ -5,16 +5,23 @@
   The Friends service returns an array of friend data
 -->
 <ion-view view-title="{{list.name}}">
+
+    <ion-nav-buttons side="secondary">
+        <button class="button button-clear button-positive add-item-button" ng-click="stopEdit()" ng-show="isEdit">Done</button>
+    </ion-nav-buttons>
+
     <ion-content>
 
         <div class="row">
             <div class="col">
+                <i class="icon ion-ios-plus-outline xx-large" ng-click="startEdit()" ng-show="!isEdit"></i>
                 <input id="newItemName"
                        type="text"
                        placeholder="Add Item"
                        ng-model="newItem.name"
                        key-bind="addItem()"
-                       class="add-item">
+                       class="add-item"
+                       ng-show="isEdit">
             </div>
         </div>
 

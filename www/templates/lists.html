@@ -1,21 +1,12 @@
+<ion-nav-bar></ion-nav-bar>
+
 <ion-view view-title="Lists">
 
-    <ion-content>
+    <ion-nav-buttons side="secondary">
+        <button class="button button-clear button-positive add-item-button" ng-click="stopEdit()" ng-show="isEdit">Done</button>
+    </ion-nav-buttons>
 
-        <div class="row">
-            <div class="col col-80">
-                <input id="newListName"
-                       type="text"
-                       placeholder="Add List"
-                       ng-model="newList.name"
-                       class="add-item">
-            </div>
-            <div class="col">
-                <button class="button button-clear button-positive add-item-button" ng-click="addList()">
-                    Add
-                </button>
-            </div>
-        </div>
+    <ion-content>
 
         <ion-list>
             <ion-item class="item-remove-animate item-icon-right" collection-repeat="list in lists" type="item-text-wrap"
@@ -27,12 +18,18 @@
             </ion-item>
         </ion-list>
 
-        <!--<div class="list">-->
-            <!--<a class="item item-icon-right" ng-repeat="list in lists" href="#/tab/lists/{{list.id}}" on-swipe-left="onSwipeLeft()">{{list.name}}-->
-                <!--<span class="badge badge-positive">{{list.items.length}}</span>-->
-                <!--<i class="icon ion-chevron-right icon-accessory"></i>-->
-            <!--</a>-->
-        <!--</div>-->
+        <div class="row">
+            <div class="col">
+                <form ng-submit="addList()">
+                    <input id="newListName"
+                           type="text"
+                           placeholder="Add List"
+                           ng-model="newList.name"
+                           class="add-item">
+                    <!--<input type="submit" />-->
+                </form>
+            </div>
+        </div>
 
     </ion-content>
 </ion-view>

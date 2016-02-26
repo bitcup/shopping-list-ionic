@@ -23,11 +23,11 @@
     background-color: #fafafa !important;
 }
 .add-item {
-    background-color: #fafafa !important;
-    border-color: #ddd !important;
+    /*background-color: #fafafa !important;*/
+    /*border-color: #ddd !important;*/
     font-size: 16px !important;
     padding-left: 7px !important;
-    height: 47px !important;
+    /*height: 47px !important;*/
     width: 100%;
 }
 
