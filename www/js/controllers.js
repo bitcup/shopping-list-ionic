@@ -15,27 +15,15 @@ angular.module('shopping-list.controllers', [])
             ListsModel.all().then(function (result) {
                 $scope.lists = result.data;
                 $scope.newList.name = '';
+                $ionicListDelegate.closeOptionButtons();
             });
         }
 
-        $scope.isEdit = false;
         $scope.lists = [];
         $scope.newList = {name: ''};
 
-        $scope.startEdit = function () {
-            $scope.isEdit = true;
-        };
-
-        $scope.stopEdit = function () {
-            if (!isEmptyOrSpaces($scope.newList.name)) {
-                $scope.addList();
-            }
-            $scope.isEdit = false;
-        };
-
         $scope.deleteList = function (list) {
             ListsModel.delete(list.id).then(function (result) {
-                $ionicListDelegate.closeOptionButtons();
                 getAll();
             });
         };
@@ -43,7 +31,6 @@ angular.module('shopping-list.controllers', [])
         $scope.clearItemsInList = function (list) {
             list.items = [];
             ListsModel.update(list.id, list).then(function (result) {
-                $ionicListDelegate.closeOptionButtons();
                 getAll();
             });
         };
@@ -74,22 +61,11 @@ angular.module('shopping-list.controllers', [])
             ListsModel.fetch($stateParams.listId).then(function (result) {
                 $scope.list = result.data;
                 $scope.newItem.name = '';
+                $ionicListDelegate.closeOptionButtons();
             });
         }
 
-        $scope.isEdit = false;
         $scope.newItem = {name: '', purchased: false};
-
-        $scope.startEdit = function () {
-            $scope.isEdit = true;
-        };
-
-        $scope.stopEdit = function () {
-            if (!isEmptyOrSpaces($scope.newItem.name)) {
-                $scope.addItem();
-            }
-            $scope.isEdit = false;
-        };
 
         $scope.deleteItem = function (item) {
             var list = angular.copy($scope.list);
@@ -99,7 +75,6 @@ angular.module('shopping-list.controllers', [])
                 }
             }
             ListsModel.update(list.id, list).then(function (result) {
-                $ionicListDelegate.closeOptionButtons();
                 getAll();
             });
         };
@@ -112,7 +87,6 @@ angular.module('shopping-list.controllers', [])
                 }
             }
             ListsModel.update(list.id, list).then(function (result) {
-                $ionicListDelegate.closeOptionButtons();
                 getAll();
             });
         };
