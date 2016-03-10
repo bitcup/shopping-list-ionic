@@ -11,11 +11,15 @@ angular.module('shopping-list.controllers', [])
             getAll();
         });
 
+        function parseAll(result) {
+            $scope.lists = result.data;
+            $scope.newList.name = '';
+            $ionicListDelegate.closeOptionButtons();
+        }
+
         function getAll() {
-            ListsModel.all().then(function (result) {
-                $scope.lists = result.data;
-                $scope.newList.name = '';
-                $ionicListDelegate.closeOptionButtons();
+            ListsModel.getAllLists().then(function (result) {
+                parseAll(result);
             });
         }
 
@@ -23,84 +27,73 @@ angular.module('shopping-list.controllers', [])
         $scope.newList = {name: ''};
 
         $scope.deleteList = function (list) {
-            ListsModel.delete(list.id).then(function (result) {
-                getAll();
+            ListsModel.deleteList(list.id).then(function (result) {
+                parseAll(result);
             });
         };
 
         $scope.clearItemsInList = function (list) {
-            list.items = [];
-            ListsModel.update(list.id, list).then(function (result) {
-                getAll();
+            ListsModel.clearList(list.id).then(function (result) {
+                parseAll(result);
             });
         };
 
         $scope.addList = function () {
             if (!isEmptyOrSpaces($scope.newList.name)) {
-                var list = {name: $scope.newList.name};
-                $scope.lists = ListsModel.create(list).then(function (result) {
-                    getAll();
+                $scope.lists = ListsModel.createList($scope.newList.name).then(function (result) {
+                    parseAll(result);
                 });
             } else {
-                getAll();
+                //getAll();
             }
         };
 
-        $scope.updateList = function (list) {
-            ListsModel.update(list.id, list).then(function (result) {
-                getAll();
-            });
-        };
+        //$scope.updateList = function (list) {
+        //    ListsModel.update(list.id, list).then(function (result) {
+        //        getAll();
+        //    });
+        //};
     })
 
     .controller('ItemsCtrl', function ($scope, $ionicListDelegate, $stateParams, ListsModel) {
 
-        getAll();
+        $scope.$on('$ionicView.enter', function (e) {
+            getAll();
+        });
+
+        function parseAll(result) {
+            $scope.list = result.data;
+            $scope.newItem.name = '';
+            $ionicListDelegate.closeOptionButtons();
+        }
 
         function getAll() {
-            ListsModel.fetch($stateParams.listId).then(function (result) {
-                $scope.list = result.data;
-                $scope.newItem.name = '';
-                $ionicListDelegate.closeOptionButtons();
+            ListsModel.getList($stateParams.listId).then(function (result) {
+                parseAll(result);
             });
         }
 
         $scope.newItem = {name: '', purchased: false};
 
         $scope.deleteItem = function (item) {
-            var list = angular.copy($scope.list);
-            for (var i = list.items.length - 1; i >= 0; i--) {
-                if (list.items[i].id === item.id) {
-                    list.items.splice(i, 1);
-                }
-            }
-            ListsModel.update(list.id, list).then(function (result) {
-                getAll();
+            ListsModel.deleteItemFromList($stateParams.listId, item.id).then(function (result) {
+                parseAll(result);
             });
         };
 
         $scope.togglePurchased = function (item) {
-            var list = angular.copy($scope.list);
-            for (var i = list.items.length - 1; i >= 0; i--) {
-                if (list.items[i].id === item.id) {
-                    list.items[i].purchased = !list.items[i].purchased;
-                }
-            }
-            ListsModel.update(list.id, list).then(function (result) {
-                getAll();
+            ListsModel.togglePurchased($stateParams.listId, item.id).then(function (result) {
+                parseAll(result);
             });
         };
 
         $scope.addItem = function () {
             if (!isEmptyOrSpaces($scope.newItem.name)) {
-                var list = angular.copy($scope.list);
-                //list.items.unshift($scope.newItem);
-                list.items.push($scope.newItem);
-                ListsModel.update(list.id, list).then(function (result) {
-                    getAll();
+                ListsModel.addItemToList($stateParams.listId, $scope.newItem.name).then(function (result) {
+                    parseAll(result);
                 });
             } else {
-                getAll();
+                //getAll();
             }
         };
     })

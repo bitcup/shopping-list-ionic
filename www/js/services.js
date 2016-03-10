@@ -13,24 +13,36 @@ angular.module('shopping-list.services', ['ngResource'])
             return getUrl() + '/' + id;
         }
 
-        service.all = function () {
+        service.getAllLists = function () {
             return $http.get(getUrl());
         };
 
-        service.fetch = function (id) {
-            return $http.get(getUrlForId(id));
+        service.getList = function (listId) {
+            return $http.get(getUrlForId(listId));
         };
 
-        service.create = function (object) {
-            return $http.post(getUrl(), object);
+        service.createList = function (listName) {
+            return $http.post(getUrl(), listName);
         };
 
-        service.update = function (id, object) {
-            return $http.put(getUrlForId(id), object);
+        service.clearList = function (listId) {
+            return $http.post(getUrlForId(listId) + '/clearItems');
         };
 
-        service.delete = function (id) {
-            return $http.delete(getUrlForId(id));
+        service.deleteList = function (listId) {
+            return $http.delete(getUrlForId(listId));
+        };
+
+        service.addItemToList = function (listId, itemName) {
+            return $http.post(getUrlForId(listId) + '/addItem', itemName);
+        };
+
+        service.deleteItemFromList = function (listId, itemId) {
+            return $http.delete(getUrlForId(listId) + '/deleteItem/' + itemId);
+        };
+
+        service.togglePurchased = function (listId, itemId) {
+            return $http.post(getUrlForId(listId) + '/togglePurchased', itemId);
         };
     })
 
