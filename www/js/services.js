@@ -21,6 +21,10 @@ angular.module('shopping-list.services', ['ngResource'])
             return $http.get(getUrlForId(listId));
         };
 
+        service.getListByName = function (listName) {
+            return $http.get(getUrl() + '/byName/' + listName);
+        };
+
         service.createList = function (listName) {
             return $http.post(getUrl(), listName);
         };
@@ -39,6 +43,10 @@ angular.module('shopping-list.services', ['ngResource'])
 
         service.deleteItemFromList = function (listId, itemId) {
             return $http.delete(getUrlForId(listId) + '/deleteItem/' + itemId);
+        };
+
+        service.deleteItemByNameFromList = function (listId, itemName) {
+            return $http.delete(getUrlForId(listId) + '/deleteItemByName/' + itemName);
         };
 
         service.togglePurchased = function (listId, itemId) {

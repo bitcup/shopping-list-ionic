@@ -11,15 +11,15 @@ angular.module('shopping-list.controllers', [])
             getAll();
         });
 
-        function parseAll(result) {
-            $scope.lists = result.data;
+        function parseListsResponse(response) {
+            $scope.lists = response.data;
             $scope.newList.name = '';
             $ionicListDelegate.closeOptionButtons();
         }
 
         function getAll() {
             ListsModel.getAllLists().then(function (result) {
-                parseAll(result);
+                parseListsResponse(result);
             });
         }
 
@@ -28,48 +28,40 @@ angular.module('shopping-list.controllers', [])
 
         $scope.deleteList = function (list) {
             ListsModel.deleteList(list.id).then(function (result) {
-                parseAll(result);
+                parseListsResponse(result);
             });
         };
 
         $scope.clearItemsInList = function (list) {
             ListsModel.clearList(list.id).then(function (result) {
-                parseAll(result);
+                parseListsResponse(result);
             });
         };
 
         $scope.addList = function () {
             if (!isEmptyOrSpaces($scope.newList.name)) {
                 $scope.lists = ListsModel.createList($scope.newList.name).then(function (result) {
-                    parseAll(result);
+                    parseListsResponse(result);
                 });
-            } else {
-                //getAll();
             }
         };
-
-        //$scope.updateList = function (list) {
-        //    ListsModel.update(list.id, list).then(function (result) {
-        //        getAll();
-        //    });
-        //};
     })
 
     .controller('ItemsCtrl', function ($scope, $ionicListDelegate, $stateParams, ListsModel) {
 
         $scope.$on('$ionicView.enter', function (e) {
-            getAll();
+            getList();
         });
 
-        function parseAll(result) {
-            $scope.list = result.data;
+        function parseListResponse(response) {
+            $scope.list = response.data;
             $scope.newItem.name = '';
             $ionicListDelegate.closeOptionButtons();
         }
 
-        function getAll() {
+        function getList() {
             ListsModel.getList($stateParams.listId).then(function (result) {
-                parseAll(result);
+                parseListResponse(result);
             });
         }
 
@@ -77,23 +69,21 @@ angular.module('shopping-list.controllers', [])
 
         $scope.deleteItem = function (item) {
             ListsModel.deleteItemFromList($stateParams.listId, item.id).then(function (result) {
-                parseAll(result);
+                parseListResponse(result);
             });
         };
 
         $scope.togglePurchased = function (item) {
             ListsModel.togglePurchased($stateParams.listId, item.id).then(function (result) {
-                parseAll(result);
+                parseListResponse(result);
             });
         };
 
         $scope.addItem = function () {
             if (!isEmptyOrSpaces($scope.newItem.name)) {
                 ListsModel.addItemToList($stateParams.listId, $scope.newItem.name).then(function (result) {
-                    parseAll(result);
+                    parseListResponse(result);
                 });
-            } else {
-                //getAll();
             }
         };
     })
@@ -184,7 +174,7 @@ angular.module('shopping-list.controllers', [])
                                     itemName = voiceParams.item;
                                     //alert("found list: " + JSON.stringify(list) + ", removing item: " + itemName);
                                     if (list != null) {
-                                        ListsModel.removeItemByNameFromList(list, itemName);
+                                        ListsModel.deleteItemByNameFromList(list, itemName);
                                         $scope.$apply();
                                     }
                                 }
