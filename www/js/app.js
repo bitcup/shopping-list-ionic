@@ -54,6 +54,12 @@ angular.module('shopping-list', ['ionic', 'shopping-list.controllers', 'shopping
         // Each state's controller can be found in controllers.js
         $stateProvider
 
+            .state('login', {
+                url: "/login",
+                templateUrl: "templates/login.html",
+                controller: 'LoginCtrl'
+            })
+
             .state('tab', {
                 url: '/tab',
                 abstract: true,
@@ -70,7 +76,7 @@ angular.module('shopping-list', ['ionic', 'shopping-list.controllers', 'shopping
                     }
                 }
             })
-            .state('tab.list-detail', {
+            .state('tab.list-items', {
                 url: '/lists/:listId',
                 views: {
                     'tab-lists': {
@@ -91,7 +97,7 @@ angular.module('shopping-list', ['ionic', 'shopping-list.controllers', 'shopping
             });
 
         // if none of the above states are matched, use this as the fallback
-        $urlRouterProvider.otherwise('/tab/lists');
+        $urlRouterProvider.otherwise('/login');
 
     })
 
